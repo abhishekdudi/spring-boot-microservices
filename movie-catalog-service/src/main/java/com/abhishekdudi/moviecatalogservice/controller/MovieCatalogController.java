@@ -24,7 +24,11 @@ public class MovieCatalogController {
     public CatalogList getCatalogs(@PathVariable(name = "userId") String userId) {
 
         // get all the rated movies by the user
-        UserRatingsList ratings = restTemplate.getForObject("http://localhost:8083/ratings/users/"+ userId, UserRatingsList.class);
+        // ratings-data-service as a service
+//        UserRatingsList ratings = restTemplate.getForObject("http://localhost:8083/ratings/users/"+ userId, UserRatingsList.class);
+
+        // as eureka client
+        UserRatingsList ratings = restTemplate.getForObject("http://ratings-data-service/ratings/users/"+ userId, UserRatingsList.class);
 
         // without using streams
 //        List<CatalogItem> itemList = new ArrayList<>();
@@ -39,8 +43,13 @@ public class MovieCatalogController {
 
         // using streams
         List<CatalogItem> itemList = ratings.getUserRatings().stream().map(ratingDetails -> {
+
             // for each movie, call movie info service and get details
-            Movie movie = restTemplate.getForObject("http://localhost:8082/movies/" + ratingDetails.getMovieId(), Movie.class);
+            // movie-info-service as a service
+//            Movie movie = restTemplate.getForObject("http://localhost:8082/movies/" + ratingDetails.getMovieId(), Movie.class);
+
+            // as eureka client
+            Movie movie = restTemplate.getForObject("http://movie-info-service/movies/" + ratingDetails.getMovieId(), Movie.class);
 
             // put them together
             return new CatalogItem(movie.getName(), "Motion Picture", ratingDetails.getRating());
