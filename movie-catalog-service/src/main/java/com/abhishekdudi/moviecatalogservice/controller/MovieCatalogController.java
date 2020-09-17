@@ -3,6 +3,7 @@ package com.abhishekdudi.moviecatalogservice.controller;
 import com.abhishekdudi.moviecatalogservice.model.CatalogItem;
 import com.abhishekdudi.moviecatalogservice.model.Movie;
 import com.abhishekdudi.moviecatalogservice.model.RatingDetails;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,10 +17,11 @@ import java.util.List;
 @RequestMapping("/catalog")
 public class MovieCatalogController {
 
+    @Autowired
+    private RestTemplate restTemplate;
+
     @RequestMapping("/{id}")
     public List<CatalogItem> getCatalogs(@PathVariable(name = "id") String id) {
-
-        RestTemplate restTemplate = new RestTemplate();
 
         // get all the rated movies by the user
         List<RatingDetails> ratings = Arrays.asList(
@@ -34,8 +36,6 @@ public class MovieCatalogController {
             Movie movie = restTemplate.getForObject("http://localhost:8082/movies/" + ratingDetails.getMovieId(), Movie.class);
             catalogList.add(new CatalogItem(movie.getName(), "Motion Picture", ratingDetails.getRating()));
         }
-
-        // put them together
 
 //        return Collections.singletonList(
 //                new CatalogItem("Avengers", "Motion Picture", 10)
